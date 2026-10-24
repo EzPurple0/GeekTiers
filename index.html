@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geek Tierlist | Minecraft PvP</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #0a0a0d;
+            --panel: #121216;
+            --panel-2: #18181d;
+            --border: #25252c;
+            --text: #f4f4f6;
+            --muted: #8b8b97;
+            --accent: #ff2d2d;
+            --accent-soft: rgba(255, 45, 45, 0.14);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--bg);
+            background-image: radial-gradient(ellipse 70% 40% at 50% -5%, rgba(255, 45, 45, 0.12), transparent 70%);
+            background-repeat: no-repeat;
+            color: var(--text);
+            font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        /* ---------- Header ---------- */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 6%;
+            background: rgba(10, 10, 13, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        button {
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            padding: 9px 16px;
+            cursor: pointer;
+            background: var(--panel-2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            transition: background 0.15s, border-color 0.15s, transform 0.05s;
+        }
+
+        button:hover {
+            background: #212128;
+            border-color: #34343d;
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        .primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        .primary:hover {
+            background: #ff4545;
+            border-color: #ff4545;
+        }
+
+        /* ---------- Layout ---------- */
+        main {
+            width: 92%;
+            max-width: 1050px;
+            margin: 40px auto;
+        }
+
+        h2 {
+            font-size: 30px;
+            font-weight: 800;
+            letter-spacing: -0.6px;
+            margin: 0;
+        }
+
+        h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin: 24px 0 10px;
+        }
+
+        .accent { color: var(--accent); }
+        .muted { color: var(--muted); }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        input, select {
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--text);
+            padding: 10px 14px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-soft);
+        }
+
+        input::placeholder { color: #666672; }
+
+        #search {
+            width: min(100%, 300px);
+        }
+
+        /* ---------- Gamemode tabs ---------- */
+        .modes {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 16px;
+            scrollbar-width: none;
+        }
+
+        .modes::-webkit-scrollbar { display: none; }
+
+        .mode {
+            border-radius: 999px;
+            padding: 8px 18px;
+            white-space: nowrap;
+            color: var(--muted);
+            background: var(--panel);
+        }
+
+        .mode:hover { color: var(--text); }
+
+        .mode.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        /* ---------- Rankings list ---------- */
+        .list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .list-head {
+            display: grid;
+            grid-template-columns: 60px 1fr auto 90px;
+            gap: 14px;
+            padding: 0 18px;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 60px 1fr auto 90px;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 18px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            transition: border-color 0.15s, background 0.15s, transform 0.1s;
+        }
+
+        .row:hover {
+            background: var(--panel-2);
+            border-color: #3a3a44;
+            transform: translateX(2px);
+        }
+
+        .row.top1 { border-color: rgba(255, 196, 0, 0.45); background: linear-gradient(90deg, rgba(255,196,0,0.10), var(--panel) 45%); }
+        .row.top2 { border-color: rgba(200, 205, 215, 0.35); background: linear-gradient(90deg, rgba(200,205,215,0.08), var(--panel) 45%); }
+        .row.top3 { border-color: rgba(214, 125, 70, 0.4); background: linear-gradient(90deg, rgba(214,125,70,0.09), var(--panel) 45%); }
+
+        .rank {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--muted);
+        }
+
+        .top1 .rank { color: #ffc400; }
+        .top2 .rank { color: #d3d7df; }
+        .top3 .rank { color: #e08a52; }
+
+        .player {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 0;
+        }
+
+        .player img {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: #26262d;
+            flex-shrink: 0;
+            image-rendering: pixelated;
+        }
+
+        .pname {
+            font-size: 16px;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ptitle {
+            font-size: 12.5px;
+            font-weight: 500;
+            color: var(--muted);
+        }
+
+        .tiers {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 9px;
+            background: var(--panel-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--muted);
+        }
+
+        .tier {
+            display: inline-block;
+            min-width: 44px;
+            text-align: center;
+            padding: 3px 8px;
+            border-radius: 6px;
+            color: #111;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .HT1 { background: #ff6c85; }
+        .LT1 { background: #ffad75; }
+        .HT2 { background: #ffda78; }
+        .LT2 { background: #d4e879; }
+        .HT3 { background: #83e5b1; }
+        .LT3 { background: #73d8e8; }
+        .HT4 { background: #83baff; }
+        .LT4 { background: #a69aff; }
+        .HT5 { background: #c4a0ff; }
+        .LT5 { background: #d9b5ec; }
+
+        .tier.none {
+            background: #2a2a32;
+            color: #8b8b97;
+        }
+
+        .points {
+            text-align: right;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .points small {
+            display: block;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--muted);
+        }
+
+        .empty {
+            text-align: center;
+            color: var(--muted);
+            padding: 50px 10px;
+            background: var(--panel);
+            border: 1px dashed var(--border);
+            border-radius: 14px;
+        }
+
+        /* ---------- Developer panel ---------- */
+        .panel {
+            margin-top: 40px;
+            padding: 26px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+        }
+
+        .panel input, .panel select {
+            margin: 5px 5px 5px 0;
+            max-width: 100%;
+        }
+
+        .hidden { display: none; }
+
+        .manage-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        footer {
+            margin-top: 70px;
+            padding: 26px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        @media (max-width: 700px) {
+            header { padding: 12px 5%; }
+            h2 { font-size: 24px; }
+            main { margin-top: 24px; }
+            .list-head { display: none; }
+            .row {
+                grid-template-columns: 40px 1fr 70px;
+            }
+            .row .tiers {
+                grid-column: 1 / -1;
+                justify-content: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">GEEK<span>TIERLIST</span></div>
+    <button id="loginBtn" onclick="login()">Developer Login</button>
+</header>
+
+<main>
+    <section>
+        <div class="toolbar">
+            <h2>Player Rankings<span class="accent">.</span></h2>
+
+            <input
+                id="search"
+                placeholder="Search players..."
+                oninput="renderPlayers()"
+            >
+        </div>
+
+        <div class="modes" id="modes"></div>
+
+        <div class="list-head">
+            <span>#</span>
+            <span>PLAYER</span>
+            <span>TIER</span>
+            <span style="text-align:right">POINTS</span>
+        </div>
+
+        <div class="list" id="players"></div>
+    </section>
+
+    <section id="developerPanel" class="panel hidden">
+        <h2>Developer Panel</h2>
+
+        <p class="muted">
+            Manage your Minecraft PvP rankings.
+        </p>
+
+        <h3>Add a player</h3>
+
+        <input id="username" placeholder="Minecraft username">
+
+        <select id="gamemode">
+            <option>Vanilla</option>
+            <option>UHC</option>
+            <option>Pot</option>
+            <option>NethOP</option>
+            <option>SMP</option>
+            <option>Sword</option>
+            <option>Axe</option>
+            <option>Mace</option>
+        </select>
+
+        <select id="tier">
+            <option>HT1</option>
+            <option>LT1</option>
+            <option>HT2</option>
+            <option>LT2</option>
+            <option>HT3</option>
+            <option>LT3</option>
+            <option>HT4</option>
+            <option>LT4</option>
+            <option>HT5</option>
+            <option>LT5</option>
+        </select>
+
+        <button class="primary" onclick="addPlayer()">
+            Add Player
+        </button>
+
+        <h3>Manage players</h3>
+
+        <div id="managePlayers"></div>
+
+        <p></p>
+        <button onclick="logout()">Exit Developer Mode</button>
+    </section>
+</main>
+
+<footer>
+    GEEK TIERLIST · MINECRAFT PVP
+</footer>
+
+<script>
+    let authToken = "";
+
+    const gamemodes = [
+        "Overall", "Vanilla", "UHC", "Pot",
+        "NethOP", "SMP", "Sword", "Axe", "Mace"
+    ];
+
+    const tierPoints = {
+        HT1: 60,
+        LT1: 45,
+        HT2: 30,
+        LT2: 20,
+        HT3: 10,
+        LT3: 6,
+        HT4: 4,
+        LT4: 3,
+        HT5: 2,
+        LT5: 1
+    };
+
+    const titles = [
+        [400, "Combat Grandmaster"],
+        [250, "Combat Master"],
+        [100, "Combat Ace"],
+        [50, "Combat Specialist"],
+        [20, "Combat Cadet"],
+        [10, "Combat Novice"],
+        [0, "Rookie"]
+    ];
+
+    let activeMode = "Overall";
+    let developerMode = false;
+
+    let playerList = [];
+
+    async function api(method, url, body) {
+        const res = await fetch(url, {
+            method,
+            headers: {
+                "Content-Type": "application/json",
+                ...(authToken ? { "Authorization": "Bearer " + authToken } : {})
+            },
+            body: body ? JSON.stringify(body) : undefined
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        if (res.status === 401 && developerMode) {
+            // Session expired (e.g. server restarted)
+            logout();
+        }
+
+        if (!res.ok) throw new Error(data.error || "Request failed");
+        return data;
+    }
+
+    async function loadPlayers() {
+        try {
+            playerList = await api("GET", "/api/players");
+            renderPlayers();
+        } catch (e) {
+            console.error("Could not load players", e);
+        }
+    }
+
+    function getPoints(player) {
+        return Object.values(player.tiers).reduce(
+            (sum, tier) => sum + (tierPoints[tier] || 0),
+            0
+        );
+    }
+
+    function getTitle(points) {
+        return titles.find(t => points >= t[0])[1];
+    }
+
+    function renderModes() {
+        document.getElementById("modes").innerHTML =
+            gamemodes.map(mode => `
+                <button
+                    class="mode ${activeMode === mode ? "active" : ""}"
+                    onclick="chooseMode('${mode}')"
+                >
+                    ${mode}
+                </button>
+            `).join("");
+    }
+
+    function chooseMode(mode) {
+        activeMode = mode;
+        renderModes();
+        renderPlayers();
+    }
+
+    function renderPlayers() {
+        const search = document
+            .getElementById("search")
+            .value.toLowerCase();
+
+        const filtered = playerList
+            .filter(p => p.username.toLowerCase().includes(search))
+            .filter(p =>
+                activeMode === "Overall" || p.tiers[activeMode]
+            )
+            .sort((a, b) => {
+                if (activeMode === "Overall") {
+                    return getPoints(b) - getPoints(a);
+                }
+
+                return (tierPoints[b.tiers[activeMode]] || 0)
+                    - (tierPoints[a.tiers[activeMode]] || 0);
+            });
+
+        const rows = filtered.map((p, index) => {
+            const total = getPoints(p);
+            const modePoints = activeMode === "Overall"
+                ? total
+                : (tierPoints[p.tiers[activeMode]] || 0);
+
+            let tierHTML;
+
+            if (activeMode === "Overall") {
+                const chips = Object.entries(p.tiers)
+                    .filter(([, t]) => t)
+                    .sort((a, b) => tierPoints[b[1]] - tierPoints[a[1]])
+                    .map(([m, t]) =>
+                        `<span class="chip">${m} <span class="tier ${t}">${t}</span></span>`
+                    ).join("");
+
+                tierHTML = chips ||
+                    `<span class="tier none">UNRANKED</span>`;
+            } else {
+                const t = p.tiers[activeMode];
+                tierHTML = `<span class="tier ${t}">${t}</span>`;
+            }
+
+            const rankClass = index < 3 ? `top${index + 1}` : "";
+
+            return `
+                <div class="row ${rankClass}">
+                    <div class="rank">${index + 1}</div>
+                    <div class="player">
+                        <img
+                            src="https://minotar.net/helm/${encodeURIComponent(p.username)}/64.png"
+                            alt=""
+                            onerror="this.style.visibility='hidden'"
+                        >
+                        <div style="min-width:0">
+                            <div class="pname">${escapeHTML(p.username)}</div>
+                            <div class="ptitle">${getTitle(total)} (${total} points)</div>
+                        </div>
+                    </div>
+                    <div class="tiers">${tierHTML}</div>
+                    <div class="points">${modePoints}<small>points</small></div>
+                </div>
+            `;
+        }).join("");
+
+        document.getElementById("players").innerHTML = rows ||
+            `<div class="empty">No players ranked yet.</div>`;
+
+        renderManagePlayers();
+    }
+
+    function escapeHTML(value) {
+        return String(value).replace(/[&<>"']/g, char => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        })[char]);
+    }
+
+    async function addPlayer() {
+        if (!developerMode) return;
+
+        const username = document
+            .getElementById("username").value.trim();
+
+        const mode = document.getElementById("gamemode").value;
+        const tier = document.getElementById("tier").value;
+
+        if (!username) {
+            alert("Enter a Minecraft username.");
+            return;
+        }
+
+        try {
+            playerList = await api("POST", "/api/players", { username, mode, tier });
+            document.getElementById("username").value = "";
+            renderPlayers();
+            alert("Player ranking updated!");
+        } catch (e) {
+            alert(e.message);
+        }
+    }
+
+    function renderManagePlayers() {
+        const container = document.getElementById("managePlayers");
+
+        if (!developerMode) {
+            container.innerHTML = "";
+            return;
+        }
+
+        container.innerHTML = playerList.map((p, index) => `
+            <div class="manage-row">
+                <span>${escapeHTML(p.username)}</span>
+                <button onclick="removePlayer('${escapeHTML(p.username)}')">
+                    Remove
+                </button>
+            </div>
+        `).join("");
+    }
+
+    async function removePlayer(username) {
+        if (!developerMode) return;
+
+        if (confirm("Remove this player from the list?")) {
+            try {
+                playerList = await api("DELETE", "/api/players/" + encodeURIComponent(username));
+                renderPlayers();
+            } catch (e) {
+                alert(e.message);
+            }
+        }
+    }
+
+    async function login() {
+        if (developerMode) return;
+
+        const code = prompt("Enter developer code:");
+
+        if (code === null) return;
+
+        try {
+            const data = await api("POST", "/api/login", { code });
+            authToken = data.token;
+            developerMode = true;
+            document.getElementById("developerPanel")
+                .classList.remove("hidden");
+            renderPlayers();
+        } catch (e) {
+            alert(e.message);
+        }
+    }
+
+    function logout() {
+        developerMode = false;
+        authToken = "";
+
+        document.getElementById("developerPanel")
+            .classList.add("hidden");
+
+        renderPlayers();
+    }
+
+    renderModes();
+    renderPlayers();
+    loadPlayers();
+
+    // Keep everyone's view fresh (not while the developer is editing)
+    setInterval(() => {
+        if (!developerMode) loadPlayers();
+    }, 30000);
+</script>
+
+</body>
+</html>
